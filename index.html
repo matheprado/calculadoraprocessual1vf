@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Prazo — Trânsito em Julgado | TJPR 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2e;
+    --navy-mid: #142540;
+    --navy-light: #1e3a5f;
+    --gold: #c9a84c;
+    --gold-light: #e4c97e;
+    --gold-dim: #8a6f30;
+    --cream: #f5f0e8;
+    --cream-dark: #ede5d0;
+    --red-accent: #c0392b;
+    --green-accent: #1a6b3c;
+    --green-light: #d4edda;
+    --red-light: #fde8e8;
+    --orange-light: #fff3cd;
+    --orange-accent: #d97706;
+    --text-main: #1a1a2e;
+    --text-mid: #3d3d5c;
+    --text-light: #6b6b8a;
+    --border: #d4c9b0;
+    --shadow: 0 4px 24px rgba(13,27,46,0.12);
+    --shadow-lg: 0 8px 40px rgba(13,27,46,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--cream);
+    color: var(--text-main);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    color: var(--cream);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(201,168,76,0.03) 40px,
+      rgba(201,168,76,0.03) 41px
+    );
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 32px 30px;
+    position: relative;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 14px;
+  }
+  .header-badge::before { content: '§'; font-size: 13px; }
+  header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  header h1 span { color: var(--gold); }
+  .header-sub {
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(245,240,232,0.6);
+    font-style: italic;
+  }
+  .header-refs {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ref-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.07);
+    color: rgba(245,240,232,0.7);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 32px 64px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 28px;
+    align-items: start;
+  }
+  .main-col { min-width: 0; }
+  .side-col { min-width: 0; }
+
+  /* ── CARDS ── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
+  .card-header {
+    background: var(--navy);
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+  }
+  .card-icon {
+    width: 28px; height: 28px;
+    background: rgba(201,168,76,0.2);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .card-body { padding: 22px; }
+
+  /* ── FORM ── */
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy-light);
+    font-weight: 500;
+    margin-bottom: 7px;
+  }
+  .form-group label .req { color: var(--gold-dim); margin-left: 3px; }
+  .form-group input[type="date"],
+  .form-group input[type="text"],
+  .form-group select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 15px;
+    color: var(--text-main);
+    background: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+  .form-hint {
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--navy);
+    color: var(--gold-light);
+    width: 100%;
+    justify-content: center;
+    font-size: 15px;
+    padding: 13px 22px;
+  }
+  .btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-danger {
+    background: transparent;
+    color: var(--red-accent);
+    border: 1px solid #f5c6c6;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+  }
+  .btn-danger:hover { background: var(--red-light); }
+  .btn-add {
+    background: var(--navy-light);
+    color: var(--gold-light);
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .btn-add:hover { background: var(--navy); }
+
+  /* ── RESULTADO ── */
+  #resultado { display: none; }
+  .result-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    border-radius: 10px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero::before {
+    content: '§';
+    position: absolute;
+    right: -10px; top: -20px;
+    font-size: 160px;
+    color: rgba(201,168,76,0.06);
+    font-family: 'Playfair Display', serif;
+    pointer-events: none;
+  }
+  .result-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    opacity: 0.8;
+    margin-bottom: 6px;
+  }
+  .result-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .result-dow {
+    font-size: 14px;
+    color: var(--gold-light);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .result-note {
+    margin-top: 14px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: rgba(245,240,232,0.75);
+    line-height: 1.5;
+  }
+
+  .result-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .meta-box {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .meta-box .meta-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .meta-box .meta-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 3px;
+  }
+
+  /* ── TIMELINE CALENDAR ── */
+  .timeline-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 10px;
+  }
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .day-grid-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  .dow-label {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    padding: 3px 0;
+  }
+  .day-cell {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    position: relative;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    min-height: 36px;
+  }
+  .day-cell .day-num { font-weight: 600; font-size: 12px; line-height: 1; }
+  .day-cell .day-count { font-family: 'JetBrains Mono', monospace; font-size: 8px; color: rgba(0,0,0,0.45); margin-top: 1px; }
+  .day-empty { background: transparent; border: none; }
+  .day-normal { background: #fff; border-color: var(--border); color: var(--text-mid); }
+  .day-weekend { background: #f8f6f2; color: #bbb; }
+  .day-holiday { background: var(--red-light); border-color: #f5c6c6; color: var(--red-accent); }
+  .day-suspension { background: var(--orange-light); border-color: #fde68a; color: var(--orange-accent); }
+  .day-counted { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .day-counted .day-count { color: var(--gold-light); }
+  .day-inicio { background: var(--navy-light); color: var(--gold-light); border-color: var(--gold-dim); font-style: italic; }
+  .day-vencimento { background: var(--gold); color: var(--navy); border-color: var(--gold-dim); font-weight: 700; }
+  .day-vencimento .day-count { color: var(--navy-mid); }
+  .day-recesso { background: #f0eef8; border-color: #d6d3e8; color: #8b84b0; }
+  .day-transito { background: linear-gradient(135deg, #1a6b3c 0%, #145530 100%); color: #fff; border-color: #145530; font-weight: 700; }
+  .day-transito .day-count { color: #a7f3c0; }
+  .month-section { margin-bottom: 18px; }
+  .month-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-light);
+  }
+  .legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    border: 1px solid transparent;
+  }
+  .ld-inicio { background: var(--navy-light); border-color: var(--gold-dim); }
+  .ld-counted { background: var(--navy); }
+  .ld-vencimento { background: var(--gold); }
+  .ld-transito { background: #1a6b3c; }
+  .ld-holiday { background: var(--red-light); border-color: #f5c6c6; }
+  .ld-suspension { background: var(--orange-light); border-color: #fde68a; }
+  .ld-recesso { background: #f0eef8; border-color: #d6d3e8; }
+  .ld-weekend { background: #f8f6f2; border-color: #e5e0d5; }
+
+  /* ── SIDEBAR: non-working days ── */
+  .nwd-list { max-height: 340px; overflow-y: auto; }
+  .nwd-list::-webkit-scrollbar { width: 4px; }
+  .nwd-list::-webkit-scrollbar-track { background: transparent; }
+  .nwd-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .nwd-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid #f0ece3;
+    gap: 8px;
+  }
+  .nwd-item:last-child { border-bottom: none; }
+  .nwd-left { display: flex; align-items: flex-start; gap: 8px; flex: 1; min-width: 0; }
+  .nwd-dot {
+    width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; margin-top: 5px;
+  }
+  .nwd-dot.feriado { background: var(--red-accent); }
+  .nwd-dot.suspensao { background: var(--orange-accent); }
+  .nwd-dot.recesso { background: #8b84b0; }
+  .nwd-dot.local { background: var(--gold-dim); }
+  .nwd-info {}
+  .nwd-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .nwd-desc {
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+  }
+
+  .nwd-add-form {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+  .nwd-add-form label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 5px;
+  }
+  .nwd-add-form input, .nwd-add-form select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    background: var(--cream);
+    outline: none;
+    margin-bottom: 8px;
+    color: var(--text-main);
+  }
+  .nwd-add-form input:focus, .nwd-add-form select:focus {
+    border-color: var(--gold);
+  }
+
+  /* ── ALERT BOX ── */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+    display: none;
+  }
+  .alert-warning { background: var(--orange-light); border: 1px solid #fde68a; color: #92400e; }
+  .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+  .alert-success { background: var(--green-light); border: 1px solid #a7d7ba; color: var(--green-accent); }
+
+  /* ── BASE LEGAL NOTE ── */
+  .legal-note {
+    background: var(--navy);
+    color: rgba(245,240,232,0.65);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 11.5px;
+    line-height: 1.65;
+    font-style: italic;
+    margin-top: 4px;
+  }
+  .legal-note strong { color: var(--gold-light); font-style: normal; }
+
+  /* ── TYPE BADGE ── */
+  .type-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .badge-f { background: var(--red-light); color: var(--red-accent); border: 1px solid #f5c6c6; }
+  .badge-s { background: var(--orange-light); color: var(--orange-accent); border: 1px solid #fde68a; }
+  .badge-r { background: #f0eef8; color: #8b84b0; border: 1px solid #d6d3e8; }
+  .badge-l { background: #fef9ed; color: var(--gold-dim); border: 1px solid #f0dda0; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    .container { grid-template-columns: 1fr; padding: 20px 16px 48px; }
+    .result-meta-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">TJPR — Decreto Judiciário nº 621/2025</div>
+    <h1>Calculadora de <span>Trânsito em Julgado</span><br>Dias Úteis — CPC 2015</h1>
+    <p class="header-sub">Comarca de Ponta Grossa · Calendário Forense 2026</p>
+    <div class="header-refs">
+      <span class="ref-chip">Art. 219 CPC</span>
+      <span class="ref-chip">Art. 220 CPC</span>
+      <span class="ref-chip">Art. 224 CPC</span>
+      <span class="ref-chip">30 dias úteis — MP</span>
+      <span class="ref-chip">Recesso 20/12–20/01</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <!-- COLUNA PRINCIPAL -->
+  <div class="main-col">
+
+    <!-- Formulário -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <h2>Dados da Intimação — Ministério Público</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Data da Ciência (Leitura pelo MP) <span class="req">✦</span></label>
+          <input type="date" id="dataLeitura" min="2026-01-01" max="2026-12-31">
+          <p class="form-hint">A data da leitura será <strong>excluída</strong> da contagem (CPC art. 224). O prazo começa no próximo dia útil seguinte.</p>
+        </div>
+        <div class="form-group">
+          <label>Dias do Prazo</label>
+          <select id="diasPrazo">
+            <option value="30" selected>30 dias úteis — Trânsito em Julgado (MP)</option>
+            <option value="15">15 dias úteis</option>
+            <option value="5">5 dias úteis</option>
+            <option value="10">10 dias úteis</option>
+            <option value="custom">Personalizado…</option>
+          </select>
+        </div>
+        <div class="form-group" id="customDiasGroup" style="display:none;">
+          <label>Número de dias úteis</label>
+          <input type="number" id="customDias" min="1" max="365" placeholder="Ex: 20">
+        </div>
+        <button class="btn btn-primary" onclick="calcular()">⚖ Calcular Prazo</button>
+      </div>
+    </div>
+
+    <!-- Alertas -->
+    <div class="alert alert-warning" id="alertRecesso">
+      ⚠ <strong>Atenção — Período de Recesso:</strong> O prazo intercepta o recesso forense (art. 220 CPC), com suspensão de <strong>20/12 a 20/01</strong>. Os dias do recesso não são contados.
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="resultado">
+
+      <!-- Hero -->
+      <div class="result-hero">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:center;">
+          <div style="padding:12px;background:rgba(255,255,255,0.06);border-radius:8px;border:1px solid rgba(201,168,76,0.2);">
+            <div class="result-label">Último Dia do Prazo</div>
+            <div class="result-date" id="rDataVenc" style="font-size:26px;">—</div>
+            <div class="result-dow" id="rDow">—</div>
+          </div>
+          <div style="padding:12px;background:rgba(26,107,60,0.25);border-radius:8px;border:1px solid rgba(26,107,60,0.5);">
+            <div class="result-label" style="color:#a7f3c0;">Trânsito em Julgado</div>
+            <div class="result-date" id="rDataTransito" style="font-size:26px;color:#a7f3c0;">—</div>
+            <div class="result-dow" id="rDowTransito" style="color:#a7f3c0;opacity:.8;">—</div>
+          </div>
+        </div>
+        <div class="result-note" id="rNote" style="margin-top:14px;">—</div>
+      </div>
+
+      <!-- Meta -->
+      <div class="result-meta-grid">
+        <div class="meta-box">
+          <div class="meta-val" id="rDiasContados">—</div>
+          <div class="meta-key">Dias Úteis</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-val" id="rFeriados">—</div>
+          <div class="meta-key">Excluídos</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-val" id="rTotalCorr">—</div>
+          <div class="meta-key">Dias Corridos</div>
+        </div>
+      </div>
+
+      <!-- Calendário -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📅</div>
+          <h2>Calendário de Contagem</h2>
+        </div>
+        <div class="card-body">
+          <div class="legend" style="margin-bottom:16px;">
+            <div class="legend-item"><div class="legend-dot ld-inicio"></div>Ciência (excluída)</div>
+            <div class="legend-item"><div class="legend-dot ld-counted"></div>Dia útil contado</div>
+            <div class="legend-item"><div class="legend-dot ld-vencimento"></div>Vencimento (30º dia)</div>
+            <div class="legend-item"><div class="legend-dot ld-transito"></div>Trânsito em Julgado</div>
+            <div class="legend-item"><div class="legend-dot ld-holiday"></div>Feriado</div>
+            <div class="legend-item"><div class="legend-dot ld-suspension"></div>Suspensão Expediente</div>
+            <div class="legend-item"><div class="legend-dot ld-recesso"></div>Recesso</div>
+            <div class="legend-item"><div class="legend-dot ld-weekend"></div>Final de Semana</div>
+          </div>
+          <div id="calendarContainer"></div>
+        </div>
+      </div>
+
+      <!-- Nota Legal -->
+      <div class="legal-note">
+        <strong>Base legal:</strong> Prazo contado em dias úteis (CPC art. 219). Excluída a data da ciência, inclui-se o dia do vencimento (art. 224). Não se contam sábados, domingos, feriados nacionais, estaduais e municipais, dias sem expediente forense (art. 216 c/c art. 219 §1º). Suspensão do recesso de 20/12 a 20/01 (art. 220). Calendário: Decreto Judiciário TJPR nº 621/2025. Feriado local (15/09) conforme art. 4º do Decreto — Aniversário de Ponta Grossa.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COLUNA LATERAL -->
+  <div class="side-col">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🗓</div>
+        <h2>Dias Não Úteis — 2026</h2>
+      </div>
+      <div class="card-body" style="padding:16px;">
+
+        <div class="nwd-list" id="nwdList"></div>
+
+        <!-- Adicionar -->
+        <div class="nwd-add-form">
+          <label>Adicionar Data</label>
+          <input type="date" id="addDate" min="2026-01-01" max="2026-12-31">
+          <input type="text" id="addDesc" placeholder="Descrição (ex: Feriado Municipal)">
+          <select id="addType">
+            <option value="feriado">Feriado</option>
+            <option value="suspensao">Suspensão de Expediente</option>
+            <option value="local">Feriado Local</option>
+          </select>
+          <button class="btn btn-add" onclick="adicionarData()">+ Adicionar Data</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Referência rápida -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">⚖</div>
+        <h2>Referência CPC 2015</h2>
+      </div>
+      <div class="card-body" style="font-size:12.5px; line-height:1.65; color:var(--text-mid);">
+        <p><strong style="color:var(--navy);">Art. 219.</strong> Na contagem de prazo em dias, estabelecido por lei ou pelo juiz, computar-se-ão somente os dias úteis.</p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <p><strong style="color:var(--navy);">Art. 220.</strong> Suspende-se o curso do prazo processual nos dias compreendidos entre 20 de dezembro e 20 de janeiro, inclusive.</p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <p><strong style="color:var(--navy);">Art. 224.</strong> Salvo disposição em contrário, os prazos serão contados excluindo o dia do começo e incluindo o dia do vencimento.</p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <p><strong style="color:var(--navy);">§1º.</strong> Os prazos serão suspensos nos dias em que não houver expediente forense.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// BASE DE DADOS — DIAS NÃO ÚTEIS 2026
+// Decreto Judiciário TJPR nº 621/2025
+// ═══════════════════════════════════════════════
+let nonWorkingDays = [
+  // RECESSO CPC ART. 220 (20/12/2025–20/01/2026)
+  { date: '2026-01-02', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-05', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-06', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-07', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-08', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-09', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-12', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-13', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-14', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-15', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-16', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-19', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-01-20', desc: 'Recesso Forense — último dia (CPC art. 220)', type: 'recesso' },
+
+  // ART. 1º — FERIADOS NACIONAIS / ESTADUAIS
+  { date: '2026-01-01', desc: 'Confraternização Universal', type: 'feriado' },
+  { date: '2026-02-17', desc: 'Carnaval', type: 'feriado' },
+  { date: '2026-04-03', desc: 'Paixão de Cristo', type: 'feriado' },
+  { date: '2026-04-21', desc: 'Tiradentes', type: 'feriado' },
+  { date: '2026-05-01', desc: 'Dia do Trabalho', type: 'feriado' },
+  { date: '2026-06-04', desc: 'Corpus Christi', type: 'feriado' },
+  { date: '2026-09-07', desc: 'Independência do Brasil', type: 'feriado' },
+  { date: '2026-10-12', desc: 'Nossa Senhora Aparecida', type: 'feriado' },
+  { date: '2026-10-30', desc: 'Dia do Funcionário Público (transf. de 28/10)', type: 'feriado' },
+  { date: '2026-11-02', desc: 'Finados', type: 'feriado' },
+  { date: '2026-11-15', desc: 'Proclamação da República (domingo)', type: 'feriado' },
+  { date: '2026-11-20', desc: 'Consciência Negra', type: 'feriado' },
+  { date: '2026-12-18', desc: 'Dia da Justiça (transf. de 08/12)', type: 'feriado' },
+  { date: '2026-12-25', desc: 'Natal', type: 'feriado' },
+
+  // ART. 2º — SUSPENSÃO DE EXPEDIENTE (com compensação 1h/dia)
+  { date: '2026-02-16', desc: 'Véspera de Carnaval (art. 2º)', type: 'suspensao' },
+  { date: '2026-04-02', desc: 'Quinta-feira Santa (art. 2º)', type: 'suspensao' },
+  { date: '2026-04-20', desc: 'Suspensão de Expediente (art. 2º)', type: 'suspensao' },
+  { date: '2026-06-05', desc: 'Suspensão de Expediente (art. 2º)', type: 'suspensao' },
+
+  // ART. 3º — VÉSPERAS (sem expediente)
+  { date: '2026-12-24', desc: 'Véspera de Natal (art. 3º)', type: 'suspensao' },
+  { date: '2026-12-31', desc: 'Véspera de Ano Novo (art. 3º)', type: 'suspensao' },
+
+  // RECESSO FIM DE 2026 (20/12–31/12)
+  { date: '2026-12-21', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-12-22', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-12-23', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-12-28', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-12-29', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+  { date: '2026-12-30', desc: 'Recesso Forense (CPC art. 220)', type: 'recesso' },
+
+  // ART. 4º — FERIADO LOCAL PONTA GROSSA
+  { date: '2026-09-15', desc: 'Aniversário de Ponta Grossa (art. 4º)', type: 'local' }
+];
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DIAS_LONGO = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+
+function parseDate(str) {
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function formatDate(d) {
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+function toISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+function getNWD(dateStr) {
+  return nonWorkingDays.find(x => x.date === dateStr) || null;
+}
+function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
+function isNWD(d) { return !!getNWD(toISO(d)); }
+function isBusinessDay(d) { return !isWeekend(d) && !isNWD(d); }
+
+function hasRecessoInRange(start, end) {
+  let d = new Date(start);
+  while (d <= end) {
+    const nwd = getNWD(toISO(d));
+    if (nwd && nwd.type === 'recesso') return true;
+    d = addDays(d, 1);
+  }
+  return false;
+}
+
+// ═══════════════════════════════════════════════
+// CÁLCULO PRINCIPAL
+// ═══════════════════════════════════════════════
+function calcular() {
+  const dataStr = document.getElementById('dataLeitura').value;
+  if (!dataStr) { alert('Selecione a data da ciência do MP.'); return; }
+
+  let nDias = parseInt(document.getElementById('diasPrazo').value);
+  if (isNaN(nDias)) {
+    nDias = parseInt(document.getElementById('customDias').value);
+    if (isNaN(nDias) || nDias < 1) { alert('Informe o número de dias úteis.'); return; }
+  }
+
+  const dataLeitura = parseDate(dataStr);
+  let cursor = addDays(dataLeitura, 1);
+  let contados = 0;
+  let excluidos = 0;
+  const contagem = {}; // date → number (dia útil nº X) or 0 (não conta)
+
+  // Marca a data de ciência
+  contagem[toISO(dataLeitura)] = 'inicio';
+
+  // Conta dias úteis
+  while (contados < nDias) {
+    const iso = toISO(cursor);
+    if (isBusinessDay(cursor)) {
+      contados++;
+      contagem[iso] = contados;
+    } else {
+      excluidos++;
+      contagem[iso] = 0;
+    }
+    cursor = addDays(cursor, 1);
+  }
+
+  // O vencimento é o último dia contado
+  const dataVenc = addDays(cursor, -1);
+  const isoVenc = toISO(dataVenc);
+  contagem[isoVenc] = 'vencimento';
+
+  // Trânsito em julgado: primeiro dia útil SEGUINTE ao vencimento
+  let dataTransito = addDays(dataVenc, 1);
+  while (!isBusinessDay(dataTransito)) { dataTransito = addDays(dataTransito, 1); }
+  contagem[toISO(dataTransito)] = 'transito';
+
+  // Totaliza
+  const totalDias = Math.round((dataVenc - dataLeitura) / (1000*60*60*24));
+
+  // Alerta recesso
+  const temRecesso = hasRecessoInRange(dataLeitura, dataTransito);
+  document.getElementById('alertRecesso').style.display = temRecesso ? 'block' : 'none';
+
+  // Preenche resultado
+  document.getElementById('rDataVenc').textContent = formatDate(dataVenc);
+  document.getElementById('rDow').textContent = DIAS_LONGO[dataVenc.getDay()];
+  document.getElementById('rDataTransito').textContent = formatDate(dataTransito);
+  document.getElementById('rDowTransito').textContent = DIAS_LONGO[dataTransito.getDay()];
+  document.getElementById('rNote').innerHTML = `Ciência: ${formatDate(dataLeitura)} (excluída) &nbsp;|&nbsp; Início: ${formatDate(addDays(dataLeitura,1))} &nbsp;|&nbsp; Prazo: <strong>${nDias} dias úteis</strong> &nbsp;|&nbsp; TJ: 1º minuto de ${formatDate(dataTransito)}`;
+  document.getElementById('rDiasContados').textContent = nDias;
+  document.getElementById('rFeriados').textContent = excluidos;
+  document.getElementById('rTotalCorr').textContent = totalDias;
+
+  document.getElementById('resultado').style.display = 'block';
+
+  // Renderiza calendário (estende até o mês do trânsito em julgado)
+  renderCalendar(dataLeitura, dataTransito, contagem);
+
+  // Scroll suave
+  setTimeout(() => {
+    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ═══════════════════════════════════════════════
+// CALENDÁRIO MENSAL
+// ═══════════════════════════════════════════════
+function renderCalendar(start, end, contagem) {
+  const container = document.getElementById('calendarContainer');
+  container.innerHTML = '';
+
+  // Meses a exibir: do mês de start ao mês de end
+  let y = start.getFullYear(), m = start.getMonth();
+  const endY = end.getFullYear(), endM = end.getMonth();
+
+  while (y < endY || (y === endY && m <= endM)) {
+    container.appendChild(renderMonth(y, m, start, end, contagem));
+    m++;
+    if (m > 11) { m = 0; y++; }
+  }
+}
+
+function renderMonth(year, month, rangeStart, rangeEnd, contagem) {
+  const section = document.createElement('div');
+  section.className = 'month-section';
+
+  const title = document.createElement('div');
+  title.className = 'month-title';
+  title.textContent = `${MESES[month]} ${year}`;
+  section.appendChild(title);
+
+  // Cabeçalho de dias da semana
+  const header = document.createElement('div');
+  header.className = 'day-grid-header';
+  DIAS_SEMANA.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dow-label';
+    el.textContent = d;
+    header.appendChild(el);
+  });
+  section.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'day-grid';
+
+  const firstDay = new Date(year, month, 1);
+  const startDow = firstDay.getDay(); // 0=Dom
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Células vazias
+  for (let i = 0; i < startDow; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'day-cell day-empty';
+    grid.appendChild(empty);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const iso = toISO(date);
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    numEl.textContent = d;
+
+    const ctEl = document.createElement('div');
+    ctEl.className = 'day-count';
+
+    const inRange = date >= rangeStart && date <= rangeEnd;
+    const ct = contagem[iso];
+
+    if (ct === 'inicio') {
+      cell.classList.add('day-inicio');
+      ctEl.textContent = 'ciência';
+    } else if (ct === 'vencimento') {
+      cell.classList.add('day-vencimento');
+      ctEl.textContent = 'Venc.';
+    } else if (ct === 'transito') {
+      cell.classList.add('day-transito');
+      ctEl.textContent = 'T.J.';
+      cell.title = 'Trânsito em Julgado — 1º minuto do dia';
+    } else if (typeof ct === 'number' && ct > 0) {
+      cell.classList.add('day-counted');
+      ctEl.textContent = `${ct}º`;
+    } else if (inRange) {
+      const nwd = getNWD(iso);
+      if (nwd) {
+        if (nwd.type === 'recesso') cell.classList.add('day-recesso');
+        else if (nwd.type === 'feriado' || nwd.type === 'local') cell.classList.add('day-holiday');
+        else cell.classList.add('day-suspension');
+      } else if (isWeekend(date)) {
+        cell.classList.add('day-weekend');
+      } else {
+        cell.classList.add('day-normal');
+      }
+    } else {
+      cell.classList.add('day-normal');
+    }
+
+    // Tooltip
+    const nwd = getNWD(iso);
+    if (nwd) cell.title = nwd.desc;
+
+    cell.appendChild(numEl);
+    cell.appendChild(ctEl);
+    grid.appendChild(cell);
+  }
+
+  section.appendChild(grid);
+  return section;
+}
+
+// ═══════════════════════════════════════════════
+// SIDEBAR — LISTA DE DIAS NÃO ÚTEIS
+// ═══════════════════════════════════════════════
+function renderNWDList() {
+  const list = document.getElementById('nwdList');
+  list.innerHTML = '';
+
+  const sorted = [...nonWorkingDays].sort((a,b) => a.date.localeCompare(b.date));
+  const grouped = {};
+  sorted.forEach(item => {
+    const m = item.date.substring(5,7);
+    if (!grouped[m]) grouped[m] = [];
+    grouped[m].push(item);
+  });
+
+  Object.entries(grouped).sort((a,b) => a[0].localeCompare(b[0])).forEach(([m, items]) => {
+    const headerDiv = document.createElement('div');
+    headerDiv.style.cssText = 'font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:8px 0 3px;margin-top:4px;';
+    headerDiv.textContent = MESES[parseInt(m)-1];
+    list.appendChild(headerDiv);
+
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'nwd-item';
+
+      const d = parseDate(item.date);
+      const dateStr = `${String(d.getDate()).padStart(2,'0')}/${m} (${DIAS_SEMANA[d.getDay()]})`;
+
+      const badgeMap = { feriado:'badge-f', suspensao:'badge-s', recesso:'badge-r', local:'badge-l' };
+      const labelMap = { feriado:'Fer.', suspensao:'Susp.', recesso:'Rec.', local:'Local' };
+      const dotMap = { feriado:'feriado', suspensao:'suspensao', recesso:'recesso', local:'local' };
+
+      const isRemovable = item.type !== 'recesso';
+
+      row.innerHTML = `
+        <div class="nwd-left">
+          <div class="nwd-dot ${dotMap[item.type]}"></div>
+          <div class="nwd-info">
+            <div class="nwd-date">${dateStr}</div>
+            <div class="nwd-desc" title="${item.desc}">${item.desc}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+          <span class="type-badge ${badgeMap[item.type]}">${labelMap[item.type]}</span>
+          ${isRemovable ? `<button class="btn btn-danger" onclick="removerData('${item.date}')">✕</button>` : ''}
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  });
+}
+
+function adicionarData() {
+  const date = document.getElementById('addDate').value;
+  const desc = document.getElementById('addDesc').value.trim();
+  const type = document.getElementById('addType').value;
+
+  if (!date) { alert('Selecione uma data.'); return; }
+  if (!desc) { alert('Informe uma descrição.'); return; }
+
+  // Verifica duplicata
+  if (nonWorkingDays.find(x => x.date === date)) {
+    const ex = nonWorkingDays.find(x => x.date === date);
+    if (!confirm(`Já existe "${ex.desc}" nessa data. Deseja substituir?`)) return;
+    nonWorkingDays = nonWorkingDays.filter(x => x.date !== date);
+  }
+
+  nonWorkingDays.push({ date, desc, type });
+  document.getElementById('addDate').value = '';
+  document.getElementById('addDesc').value = '';
+
+  renderNWDList();
+}
+
+function removerData(dateStr) {
+  const item = nonWorkingDays.find(x => x.date === dateStr);
+  if (!confirm(`Remover "${item.desc}" (${dateStr})?`)) return;
+  nonWorkingDays = nonWorkingDays.filter(x => x.date !== dateStr);
+  renderNWDList();
+}
+
+// ═══════════════════════════════════════════════
+// SELECT PERSONALIZADO
+// ═══════════════════════════════════════════════
+document.getElementById('diasPrazo').addEventListener('change', function() {
+  document.getElementById('customDiasGroup').style.display =
+    this.value === 'custom' ? 'block' : 'none';
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+renderNWDList();
+</script>
+</body>
+</html>
