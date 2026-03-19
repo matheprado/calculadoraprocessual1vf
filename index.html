@@ -238,6 +238,85 @@
   }
   .btn-add:hover { background: var(--navy); }
 
+  /* ── ADMIN ── */
+  .admin-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+  }
+  .admin-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .admin-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .admin-dot.locked { background: #aaa; }
+  .admin-dot.unlocked { background: var(--green-accent); }
+  .btn-admin {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    color: var(--navy);
+    transition: all 0.2s;
+  }
+  .btn-admin:hover { background: var(--navy); color: var(--gold-light); border-color: var(--navy); }
+  .btn-admin.sair { border-color: #f5c6c6; color: var(--red-accent); }
+  .btn-admin.sair:hover { background: var(--red-light); }
+  #adminForm { display: none; }
+  .admin-form-inner {
+    background: #fffbe6;
+    border: 1px solid #fde68a;
+    border-radius: 7px;
+    padding: 12px;
+    margin: 10px 0 6px;
+  }
+  .admin-form-inner label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--orange-accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .admin-form-inner input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1.5px solid #fde68a;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+  }
+  .admin-form-inner input:focus { border-color: var(--orange-accent); }
+  .admin-errmsg {
+    color: var(--red-accent);
+    font-size: 11px;
+    font-style: italic;
+    display: none;
+    margin-top: -4px;
+    margin-bottom: 6px;
+  }
+  #adminPanel { display: none; }
+
   /* ── RESULTADO ── */
   #resultado { display: none; }
   .result-hero {
@@ -663,21 +742,42 @@
         <div class="card-icon">🗓</div>
         <h2>Dias Não Úteis — 2026</h2>
       </div>
-      <div class="card-body" style="padding:16px;">
 
+      <!-- Barra de admin -->
+      <div class="admin-bar">
+        <div class="admin-status" id="adminStatusTxt">
+          <div class="admin-dot locked" id="adminDot"></div>
+          <span id="adminLabel" style="color:var(--text-light);">Somente leitura</span>
+        </div>
+        <button class="btn-admin" id="btnAdminToggle" onclick="toggleAdminForm()">🔒 Admin</button>
+      </div>
+
+      <!-- Formulário de login admin -->
+      <div id="adminForm" style="padding:0 16px;">
+        <div class="admin-form-inner">
+          <label>Senha de Administrador</label>
+          <input type="password" id="adminSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrarAdmin()">
+          <div class="admin-errmsg" id="adminErr">Senha incorreta. Tente novamente.</div>
+          <button class="btn btn-add" style="margin-top:0;" onclick="entrarAdmin()">Entrar</button>
+        </div>
+      </div>
+
+      <div class="card-body" style="padding:16px;">
         <div class="nwd-list" id="nwdList"></div>
 
-        <!-- Adicionar -->
-        <div class="nwd-add-form">
-          <label>Adicionar Data</label>
-          <input type="date" id="addDate" min="2026-01-01" max="2026-12-31">
-          <input type="text" id="addDesc" placeholder="Descrição (ex: Feriado Municipal)">
-          <select id="addType">
-            <option value="feriado">Feriado</option>
-            <option value="suspensao">Suspensão de Expediente</option>
-            <option value="local">Feriado Local</option>
-          </select>
-          <button class="btn btn-add" onclick="adicionarData()">+ Adicionar Data</button>
+        <!-- Painel de adição — visível só para admin -->
+        <div id="adminPanel">
+          <div class="nwd-add-form">
+            <label>Adicionar Data</label>
+            <input type="date" id="addDate" min="2026-01-01" max="2026-12-31">
+            <input type="text" id="addDesc" placeholder="Descrição (ex: Feriado Municipal)">
+            <select id="addType">
+              <option value="feriado">Feriado</option>
+              <option value="suspensao">Suspensão de Expediente</option>
+              <option value="local">Feriado Local</option>
+            </select>
+            <button class="btn btn-add" onclick="adicionarData()">+ Adicionar Data</button>
+          </div>
         </div>
 
       </div>
@@ -984,8 +1084,55 @@ function renderMonth(year, month, rangeStart, rangeEnd, contagem) {
 }
 
 // ═══════════════════════════════════════════════
-// SIDEBAR — LISTA DE DIAS NÃO ÚTEIS
+// ADMIN — CONTROLE DE ACESSO
+// Para alterar a senha: mude o valor de ADMIN_SENHA abaixo
 // ═══════════════════════════════════════════════
+const ADMIN_SENHA = 'tjpr2026'; // ← ALTERE AQUI SUA SENHA
+let isAdmin = false;
+
+function toggleAdminForm() {
+  if (isAdmin) { sairAdmin(); return; }
+  const f = document.getElementById('adminForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  if (f.style.display === 'block') {
+    document.getElementById('adminSenha').focus();
+    document.getElementById('adminErr').style.display = 'none';
+  }
+}
+
+function entrarAdmin() {
+  const senha = document.getElementById('adminSenha').value;
+  if (senha === ADMIN_SENHA) {
+    isAdmin = true;
+    document.getElementById('adminForm').style.display = 'none';
+    document.getElementById('adminSenha').value = '';
+    document.getElementById('adminErr').style.display = 'none';
+    document.getElementById('adminDot').className = 'admin-dot unlocked';
+    document.getElementById('adminLabel').textContent = 'Administrador';
+    document.getElementById('adminLabel').style.color = 'var(--green-accent)';
+    document.getElementById('btnAdminToggle').textContent = '🔓 Sair';
+    document.getElementById('btnAdminToggle').classList.add('sair');
+    document.getElementById('adminPanel').style.display = 'block';
+    renderNWDList();
+  } else {
+    document.getElementById('adminErr').style.display = 'block';
+    document.getElementById('adminSenha').value = '';
+    document.getElementById('adminSenha').focus();
+  }
+}
+
+function sairAdmin() {
+  isAdmin = false;
+  document.getElementById('adminDot').className = 'admin-dot locked';
+  document.getElementById('adminLabel').textContent = 'Somente leitura';
+  document.getElementById('adminLabel').style.color = 'var(--text-light)';
+  document.getElementById('btnAdminToggle').textContent = '🔒 Admin';
+  document.getElementById('btnAdminToggle').classList.remove('sair');
+  document.getElementById('adminPanel').style.display = 'none';
+  renderNWDList();
+}
+
+
 function renderNWDList() {
   const list = document.getElementById('nwdList');
   list.innerHTML = '';
@@ -1015,7 +1162,7 @@ function renderNWDList() {
       const labelMap = { feriado:'Fer.', suspensao:'Susp.', recesso:'Rec.', local:'Local' };
       const dotMap = { feriado:'feriado', suspensao:'suspensao', recesso:'recesso', local:'local' };
 
-      const isRemovable = item.type !== 'recesso';
+      const isRemovable = item.type !== 'recesso' && isAdmin;
 
       row.innerHTML = `
         <div class="nwd-left">
