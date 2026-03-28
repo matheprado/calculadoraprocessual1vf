@@ -246,7 +246,7 @@ header h1 span{color:var(--gold);}
 
 <div class="tabs-nav">
   <div class="tabs-nav-inner">
-    <button class="tab-btn active" onclick="mudarAba('mp',this)">⚖ Trânsito em Julgado — MP</button>
+    <button class="tab-btn active" onclick="mudarAba('mp',this)">⚖ Prazo Processual — MP e Partes</button>
     <button class="tab-btn" onclick="mudarAba('edital',this)">📋 Prazo de Edital</button>
   </div>
 </div>
@@ -258,12 +258,12 @@ header h1 span{color:var(--gold);}
 <div class="container">
   <div class="main-col">
     <div class="card">
-      <div class="card-header"><div class="card-icon">📋</div><h2>Dados da Intimação — Ministério Público</h2></div>
+      <div class="card-header"><div class="card-icon">📋</div><h2>Dados da Intimação — Ministério Público / Partes</h2></div>
       <div class="card-body">
         <div class="form-group">
           <label>Data da Ciência (Leitura) <span class="req">✦</span></label>
           <input type="date" id="mp_leitura" min="2025-10-01" max="2027-12-31">
-          <p class="form-hint">A data da leitura será <strong>excluída</strong> da contagem (CPC art. 224). O prazo começa no próximo dia útil seguinte.</p>
+          <p class="form-hint">Se a leitura ocorrer em dia <strong>não útil</strong> (sábado, domingo, feriado ou recesso), a ciência será automaticamente <strong>deslocada ao próximo dia útil</strong>. O prazo começa no dia útil seguinte à ciência (CPC art. 224).</p>
         </div>
         <div class="form-group">
           <label>Dias do Prazo</label>
@@ -288,6 +288,9 @@ header h1 span{color:var(--gold);}
     </div>
 
     <div id="mp_resultado" class="result-section">
+      <div class="alert alert-warning" id="mp_alertaCorrecao" style="display:none;margin-bottom:10px;">
+        📅 <strong>Data de ciência corrigida:</strong> A leitura informada caiu em dia não útil. A ciência foi considerada no próximo dia útil: <strong id="mp_dataCienciaCorrigida"></strong>.
+      </div>
       <div class="result-hero">
         <div class="rg rg-2">
           <div class="rb">
@@ -296,7 +299,7 @@ header h1 span{color:var(--gold);}
             <div class="rdow" id="mp_rVencDow">—</div>
           </div>
           <div class="rb rb-green">
-            <div class="rl">Trânsito em Julgado</div>
+            <div class="rl" id="mp_rTransitoLabel">Trânsito em Julgado</div>
             <div class="rd" id="mp_rTransito">—</div>
             <div class="rdow" id="mp_rTransitoDow">—</div>
           </div>
@@ -315,7 +318,7 @@ header h1 span{color:var(--gold);}
             <div class="li"><div class="ldot l-ciencia"></div>Ciência (excluída)</div>
             <div class="li"><div class="ldot l-counted"></div>Dia útil contado</div>
             <div class="li"><div class="ldot l-vencimento"></div>Vencimento</div>
-            <div class="li"><div class="ldot l-transito"></div>Trânsito em Julgado</div>
+            <div class="li"><div class="ldot l-transito"></div><span id="mp_legendaFinal">Trânsito em Julgado</span></div>
             <div class="li"><div class="ldot l-holiday"></div>Feriado</div>
             <div class="li"><div class="ldot l-suspension"></div>Suspensão</div>
             <div class="li"><div class="ldot l-recesso"></div>Recesso</div>
@@ -325,7 +328,7 @@ header h1 span{color:var(--gold);}
         </div>
       </div>
       <div class="legal-note">
-        <strong>Base legal:</strong> Prazo contado em dias úteis (CPC art. 219). Excluída a data da ciência, inclui-se o dia do vencimento (art. 224). Não se contam sábados, domingos, feriados nacionais, estaduais e municipais, dias sem expediente forense (art. 216 c/c art. 219 §1º). Suspensão do recesso de 20/12 a 20/01 (art. 220). Calendário: Decreto Judiciário TJPR nº 621/2025. Feriado local (15/09) — Aniversário de Ponta Grossa (art. 4º).
+        <strong>Base legal:</strong> Prazo contado em dias úteis (CPC art. 219). Se a ciência recair em dia não útil (sábado, domingo, feriado ou recesso), considera-se publicada no primeiro dia útil subsequente (CPC art. 224, §3º e jurisprudência consolidada). Excluída a data da ciência, o prazo começa no dia útil seguinte. Não se contam sábados, domingos, feriados nacionais, estaduais e municipais, dias sem expediente forense (art. 216 c/c art. 219 §1º). Suspensão do recesso de 20/12 a 20/01 (art. 220). Calendário: Decreto Judiciário TJPR nº 621/2025. Feriado local (15/09) — Aniversário de Ponta Grossa (art. 4º). <strong>Prazo de 30 dias úteis:</strong> Trânsito em Julgado (MP). <strong>Demais prazos (5, 10, 15 dias ou personalizado):</strong> Decurso de Prazo (Partes).
       </div>
     </div>
   </div>
@@ -702,17 +705,46 @@ function buildMonth(year,month,rs,re,marc){
 }
 
 // ══════════════════════════════════════════
-// CÁLCULO MP
+// CÁLCULO MP / PARTES
 // ══════════════════════════════════════════
 function calcularMP(){
   const ds=document.getElementById('mp_leitura').value;
   if(!ds){alert('Selecione a data da ciência.');return;}
   let n=parseInt(document.getElementById('mp_dias').value);
   if(isNaN(n)){n=parseInt(document.getElementById('mp_customVal').value);if(isNaN(n)||n<1){alert('Informe os dias.');return;}}
-  const leitura=pd(ds);
-  let cur=add(leitura,1),cont=0,excl=0;
+
+  const leituraInformada=pd(ds);
+
+  // ── Regra: se a leitura cair em dia não útil, desloca para o próximo dia útil
+  let ciencia=leituraInformada;
+  if(!isBiz(leituraInformada)) ciencia=nextBiz(leituraInformada);
+
+  const foiCorrigida=ciencia.getTime()!==leituraInformada.getTime();
+
+  // Alerta de correção
+  document.getElementById('mp_alertaCorrecao').style.display=foiCorrigida?'block':'none';
+  if(foiCorrigida) document.getElementById('mp_dataCienciaCorrigida').textContent=`${fmt(ciencia)} (${DL[ciencia.getDay()]})`;
+
+  // Determina se é prazo do MP (30 dias) ou prazo das partes
+  const isMP = (n===30 && document.getElementById('mp_dias').value==='30');
+  const labelFinal = isMP ? 'Trânsito em Julgado' : 'Decurso de Prazo';
+  const labelCurto = isMP ? 'T.J.' : 'Dec.';
+  const tipFinal   = isMP ? 'Trânsito em Julgado — 1º minuto do dia' : 'Decurso de Prazo — 1º minuto do dia útil seguinte';
+
+  // Atualiza labels dinâmicos
+  document.getElementById('mp_rTransitoLabel').textContent=labelFinal;
+  document.getElementById('mp_legendaFinal').textContent=labelFinal;
+
+  let cur=add(ciencia,1),cont=0,excl=0;
   const marc={};
-  marc[iso(leitura)]={cls:'ciencia',label:'ciência',tip:'Data da Ciência — excluída da contagem'};
+
+  // Marca leitura original (se foi corrigida, aparece diferente)
+  if(foiCorrigida){
+    marc[iso(leituraInformada)]={cls:'ciencia',label:'leit.',tip:`Leitura informada (${fmt(leituraInformada)}) — dia não útil, ciência deslocada para ${fmt(ciencia)}`};
+  }
+  // Marca a ciência efetiva
+  marc[iso(ciencia)]={cls:'ciencia',label:'ciência',tip:`Data da Ciência${foiCorrigida?' (corrigida)':''} — excluída da contagem`};
+
   while(cont<n){
     const i=iso(cur);
     if(isBiz(cur)){cont++;marc[i]={cls:'counted',label:`${cont}º`};}
@@ -721,21 +753,28 @@ function calcularMP(){
   }
   const venc=add(cur,-1);
   marc[iso(venc)]={cls:'vencimento',label:'Venc.',tip:'Último dia do prazo'};
-  const transito=nextBiz(venc);
-  marc[iso(transito)]={cls:'transito',label:'T.J.',tip:'Trânsito em Julgado — 1º minuto do dia'};
-  const total=Math.round((transito-leitura)/864e5);
+  const final=nextBiz(venc);
+  marc[iso(final)]={cls:'transito',label:labelCurto,tip:tipFinal};
 
-  document.getElementById('mp_alerta').style.display=hasRecesso(leitura,transito)?'block':'none';
+  const total=Math.round((final-ciencia)/864e5);
+
+  document.getElementById('mp_alerta').style.display=hasRecesso(ciencia,final)?'block':'none';
   document.getElementById('mp_rVenc').textContent=fmt(venc);
   document.getElementById('mp_rVencDow').textContent=DL[venc.getDay()];
-  document.getElementById('mp_rTransito').textContent=fmt(transito);
-  document.getElementById('mp_rTransitoDow').textContent=DL[transito.getDay()];
-  document.getElementById('mp_rNote').innerHTML=`Ciência: ${fmt(leitura)} (excluída) &nbsp;|&nbsp; Início: ${fmt(add(leitura,1))} &nbsp;|&nbsp; Prazo: <strong>${n} dias úteis</strong> &nbsp;|&nbsp; T.J.: 1º minuto de ${fmt(transito)}`;
+  document.getElementById('mp_rTransito').textContent=fmt(final);
+  document.getElementById('mp_rTransitoDow').textContent=DL[final.getDay()];
+
+  let noteExtra = foiCorrigida
+    ? `Leitura informada: ${fmt(leituraInformada)} (dia não útil) → Ciência considerada: <strong>${fmt(ciencia)}</strong> &nbsp;|&nbsp; `
+    : `Ciência: ${fmt(ciencia)} (excluída) &nbsp;|&nbsp; `;
+  document.getElementById('mp_rNote').innerHTML=
+    `${noteExtra}Início: ${fmt(add(ciencia,1))} &nbsp;|&nbsp; Prazo: <strong>${n} dias úteis</strong> &nbsp;|&nbsp; ${labelFinal}: 1º minuto de ${fmt(final)}`;
+
   document.getElementById('mp_mDias').textContent=n;
   document.getElementById('mp_mExcl').textContent=excl;
   document.getElementById('mp_mCorr').textContent=total;
   document.getElementById('mp_resultado').style.display='block';
-  renderCal('mp_cal',leitura,transito,marc);
+  renderCal('mp_cal',leituraInformada,final,marc);
   setTimeout(()=>document.getElementById('mp_resultado').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
