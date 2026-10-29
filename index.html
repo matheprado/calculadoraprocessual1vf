@@ -495,10 +495,17 @@ header h1 span{color:var(--gold);}
 
 <script>
 // ══════════════════════════════════════════
-// CONFIGURAÇÃO — ALTERE SUA SENHA AQUI
+// CONFIGURAÇÃO — REPOSITÓRIO GITHUB
+// No GitHub Pages o usuário e o repositório são detectados
+// automaticamente pelo endereço do site. Só preencha abaixo
+// se a detecção automática não funcionar.
 // ══════════════════════════════════════════
-const ADMIN_SENHA = 'tjfam01';
+const GH_OWNER_MANUAL = '';      // ex: 'matheprado'
+const GH_REPO_MANUAL  = '';      // ex: 'prazo-tjpr'
+const GH_BRANCH       = 'main';
+const GH_ARQUIVO      = 'feriados.json';
 let isAdmin = false;
+let ghToken = null;
 
 // ══════════════════════════════════════════
 // BASE DE DADOS — DIAS NÃO ÚTEIS 2025–2027
@@ -852,7 +859,63 @@ function calcularEdital(){
 }
 
 // ══════════════════════════════════════════
-// ADMIN
+// GITHUB — LEITURA E GRAVAÇÃO DO feriados.json
+// ══════════════════════════════════════════
+function ghRepo(){
+  let owner=GH_OWNER_MANUAL, repo=GH_REPO_MANUAL;
+  const h=location.hostname;
+  if(!owner && h.endsWith('.github.io')) owner=h.split('.')[0];
+  if(!repo && h.endsWith('.github.io')){
+    const p=location.pathname.split('/').filter(Boolean);
+    repo = (p.length && !p[0].includes('.')) ? p[0] : `${owner}.github.io`;
+  }
+  return {owner,repo};
+}
+function ghUrl(){const {owner,repo}=ghRepo();return `https://api.github.com/repos/${owner}/${repo}/contents/${GH_ARQUIVO}`;}
+function b64(str){return btoa(unescape(encodeURIComponent(str)));}
+
+// Carrega a lista publicada (para todos os visitantes)
+async function carregarFeriados(){
+  try{
+    const r=await fetch(`${GH_ARQUIVO}?v=${Date.now()}`,{cache:'no-store'});
+    if(!r.ok) return;                       // arquivo ainda não existe → usa a lista padrão do código
+    const dados=await r.json();
+    if(Array.isArray(dados) && dados.length) NWD=dados;
+  }catch(e){ /* aberto fora do GitHub Pages → usa a lista padrão do código */ }
+}
+
+// Grava a lista inteira no repositório
+async function salvarNoGitHub(mensagem){
+  if(!ghToken) return false;
+  setStatus('Salvando no GitHub…','#d97706');
+  const headers={'Authorization':`Bearer ${ghToken}`,'Accept':'application/vnd.github+json'};
+  try{
+    let sha;
+    const g=await fetch(`${ghUrl()}?ref=${GH_BRANCH}`,{headers,cache:'no-store'});
+    if(g.ok) sha=(await g.json()).sha;
+    else if(g.status!==404) throw new Error(`leitura ${g.status}`);
+    const ordenado=[...NWD].sort((a,b)=>a.date.localeCompare(b.date));
+    const body={message:mensagem,content:b64(JSON.stringify(ordenado,null,2)),branch:GH_BRANCH};
+    if(sha) body.sha=sha;
+    const p=await fetch(ghUrl(),{method:'PUT',headers,body:JSON.stringify(body)});
+    if(!p.ok) throw new Error(`gravação ${p.status}`);
+    setStatus('✓ Salvo no GitHub — no ar em ~1 min','var(--green-accent)');
+    return true;
+  }catch(e){
+    setStatus(`✕ Não salvou (${e.message}). Verifique o token.`,'var(--red-accent)');
+    return false;
+  }
+}
+
+function setStatus(txt,cor){
+  ['mp','ed'].forEach(sid=>{
+    const el=document.getElementById(`adm_status_${sid}`);
+    if(el){el.textContent=txt;el.style.color=cor;el.style.display=txt?'block':'none';}
+  });
+}
+
+// ══════════════════════════════════════════
+// ADMIN — ACESSO POR TOKEN DO GITHUB
 // ══════════════════════════════════════════
 function toggleAdminForm(){
   if(isAdmin){sairAdmin();return;}
@@ -864,32 +927,49 @@ function toggleAdminForm(){
     if(show){document.getElementById(`adm_pw_${id}`).focus();document.getElementById(`adm_err_${id}`).style.display='none';}
   });
 }
-function entrarAdmin(id){
-  if(document.getElementById(`adm_pw_${id}`).value===ADMIN_SENHA){
-    isAdmin=true;
-    ['mp','ed'].forEach(sid=>{
-      const f=document.getElementById(`adm_form_${sid}`);if(f)f.style.display='none';
-      const pw=document.getElementById(`adm_pw_${sid}`);if(pw)pw.value='';
-      const dot=document.getElementById(`adm_dot_${sid}`);if(dot)dot.className='adot unlocked';
-      const lbl=document.getElementById(`adm_lbl_${sid}`);if(lbl){lbl.textContent='Administrador';lbl.style.color='var(--green-accent)';}
-      const btn=document.getElementById(`adm_btn_${sid}`);if(btn){btn.textContent='🔓 Sair';btn.classList.add('sair');}
-      const pnl=document.getElementById(`adm_panel_${sid}`);if(pnl)pnl.style.display='block';
-    });
-    renderNWD();
-  }else{
-    document.getElementById(`adm_err_${id}`).style.display='block';
+
+async function entrarAdmin(id,tokenSalvo){
+  const token=tokenSalvo||document.getElementById(`adm_pw_${id}`).value.trim();
+  const err=document.getElementById(`adm_err_${id}`);
+  if(!token){err.textContent='Cole o token do GitHub.';err.style.display='block';return;}
+  const {owner,repo}=ghRepo();
+  if(!owner||!repo){err.textContent='Repositório não identificado. Abra pelo endereço do GitHub Pages.';err.style.display='block';return;}
+  try{
+    const r=await fetch(`https://api.github.com/repos/${owner}/${repo}`,{headers:{'Authorization':`Bearer ${token}`,'Accept':'application/vnd.github+json'}});
+    const info=r.ok?await r.json():null;
+    if(!info||!info.permissions||!info.permissions.push) throw new Error();
+  }catch(e){
+    if(tokenSalvo){try{localStorage.removeItem('gh_token');}catch(_){} return;}
+    err.textContent='Token inválido ou sem permissão de escrita neste repositório.';
+    err.style.display='block';
     document.getElementById(`adm_pw_${id}`).value='';
-    document.getElementById(`adm_pw_${id}`).focus();
+    return;
   }
+  ghToken=token;isAdmin=true;
+  const lembrar=document.getElementById(`adm_lembrar_${id}`);
+  if(!tokenSalvo && lembrar && lembrar.checked){try{localStorage.setItem('gh_token',token);}catch(_){}}
+  ['mp','ed'].forEach(sid=>{
+    const f=document.getElementById(`adm_form_${sid}`);if(f)f.style.display='none';
+    const pw=document.getElementById(`adm_pw_${sid}`);if(pw)pw.value='';
+    const dot=document.getElementById(`adm_dot_${sid}`);if(dot)dot.className='adot unlocked';
+    const lbl=document.getElementById(`adm_lbl_${sid}`);if(lbl){lbl.textContent='Administrador';lbl.style.color='var(--green-accent)';}
+    const btn=document.getElementById(`adm_btn_${sid}`);if(btn){btn.textContent='🔓 Sair';btn.classList.add('sair');}
+    const pnl=document.getElementById(`adm_panel_${sid}`);if(pnl)pnl.style.display='block';
+  });
+  setStatus('');
+  renderNWD();
 }
+
 function sairAdmin(){
-  isAdmin=false;
+  isAdmin=false;ghToken=null;
+  try{localStorage.removeItem('gh_token');}catch(_){}
   ['mp','ed'].forEach(id=>{
     const dot=document.getElementById(`adm_dot_${id}`);if(dot)dot.className='adot locked';
     const lbl=document.getElementById(`adm_lbl_${id}`);if(lbl){lbl.textContent='Somente leitura';lbl.style.color='var(--text-light)';}
     const btn=document.getElementById(`adm_btn_${id}`);if(btn){btn.textContent='🔒 Admin';btn.classList.remove('sair');}
     const pnl=document.getElementById(`adm_panel_${id}`);if(pnl)pnl.style.display='none';
   });
+  setStatus('');
   renderNWD();
 }
 
@@ -900,7 +980,7 @@ function buildSidebar(containerId,sid){
   const c=document.getElementById(containerId);c.innerHTML='';
   const card=document.createElement('div');card.className='card';
   card.innerHTML=`
-    <div class="card-header"><div class="card-icon">🗓</div><h2>Dias Não Úteis — 2026</h2></div>
+    <div class="card-header"><div class="card-icon">🗓</div><h2>Dias Não Úteis — 2025 a 2027</h2></div>
     <div class="admin-bar">
       <div class="admin-status">
         <div class="adot locked" id="adm_dot_${sid}"></div>
@@ -908,11 +988,15 @@ function buildSidebar(containerId,sid){
       </div>
       <button class="btn-admin" id="adm_btn_${sid}" onclick="toggleAdminForm()">🔒 Admin</button>
     </div>
+    <div id="adm_status_${sid}" style="display:none;padding:6px 13px;font-size:11px;font-style:italic;border-bottom:1px solid var(--border);background:#fff;"></div>
     <div id="adm_form_${sid}" style="display:none;padding:0 13px;">
       <div class="afi">
-        <label>Senha de Administrador</label>
-        <input type="password" id="adm_pw_${sid}" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrarAdmin('${sid}')">
-        <div class="aerr" id="adm_err_${sid}">Senha incorreta.</div>
+        <label>Token do GitHub</label>
+        <input type="password" id="adm_pw_${sid}" placeholder="github_pat_…" onkeydown="if(event.key==='Enter')entrarAdmin('${sid}')">
+        <div class="aerr" id="adm_err_${sid}">Token inválido.</div>
+        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-family:'Source Serif 4',serif;font-size:11.5px;color:var(--text-mid);margin:2px 0 6px;">
+          <input type="checkbox" id="adm_lembrar_${sid}" style="width:auto;margin:0;"> Lembrar neste computador
+        </label>
         <button class="btn btn-add" style="margin-top:0;" onclick="entrarAdmin('${sid}')">Entrar</button>
       </div>
     </div>
@@ -926,9 +1010,10 @@ function buildSidebar(containerId,sid){
           <select id="add_type_${sid}">
             <option value="feriado">Feriado</option>
             <option value="suspensao">Suspensão de Expediente</option>
+            <option value="recesso">Recesso</option>
             <option value="local">Feriado Local</option>
           </select>
-          <button class="btn btn-add" onclick="addNWD('${sid}')">+ Adicionar Data</button>
+          <button class="btn btn-add" onclick="addNWD('${sid}')">+ Adicionar e Salvar</button>
         </div>
       </div>
     </div>`;
@@ -941,25 +1026,25 @@ function renderNWD(){
     el.innerHTML='';
     const sorted=[...NWD].sort((a,b)=>a.date.localeCompare(b.date));
     const grp={};
-    sorted.forEach(item=>{const m=item.date.substring(5,7);if(!grp[m])grp[m]=[];grp[m].push(item);});
-    Object.entries(grp).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([m,items])=>{
+    sorted.forEach(item=>{const k=item.date.substring(0,7);if(!grp[k])grp[k]=[];grp[k].push(item);});
+    Object.entries(grp).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([k,items])=>{
+      const [ano,m]=k.split('-');
       const hdr=document.createElement('div');
       hdr.style.cssText='font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:6px 0 2px;margin-top:2px;';
-      hdr.textContent=MESES[parseInt(m)-1];el.appendChild(hdr);
+      hdr.textContent=`${MESES[parseInt(m)-1]} ${ano}`;el.appendChild(hdr);
       items.forEach(item=>{
         const row=document.createElement('div');row.className='nwd-item';
         const d=pd(item.date);const ds=`${String(d.getDate()).padStart(2,'0')}/${m} (${DS[d.getDay()]})`;
         const bm={feriado:'tb-f',suspensao:'tb-s',recesso:'tb-r',local:'tb-l'};
         const lm={feriado:'Fer.',suspensao:'Susp.',recesso:'Rec.',local:'Local'};
-        const dm={feriado:'feriado',suspensao:'suspensao',recesso:'recesso',local:'local'};
-        const canDel=item.type!=='recesso'&&isAdmin;
+        const canDel=isAdmin;
         row.innerHTML=`
           <div class="nwd-left">
-            <div class="ndot ${dm[item.type]}"></div>
+            <div class="ndot ${item.type}"></div>
             <div><div class="nwd-date">${ds}</div><div class="nwd-desc" title="${item.desc}">${item.desc}</div></div>
           </div>
           <div style="display:flex;align-items:center;gap:3px;flex-shrink:0;">
-            <span class="tbadge ${bm[item.type]}">${lm[item.type]}</span>
+            <span class="tbadge ${bm[item.type]||'tb-f'}">${lm[item.type]||'Fer.'}</span>
             ${canDel?`<button class="btn btn-danger" onclick="delNWD('${item.date}')">✕</button>`:''}
           </div>`;
         el.appendChild(row);
@@ -968,25 +1053,32 @@ function renderNWD(){
   });
 }
 
-function addNWD(sid){
+async function addNWD(sid){
+  if(!isAdmin)return;
   const date=document.getElementById(`add_dt_${sid}`).value;
   const desc=document.getElementById(`add_desc_${sid}`).value.trim();
   const type=document.getElementById(`add_type_${sid}`).value;
   if(!date){alert('Selecione uma data.');return;}
   if(!desc){alert('Informe uma descrição.');return;}
+  const anterior=[...NWD];
   const ex=NWD.find(x=>x.date===date);
   if(ex){if(!confirm(`Já existe "${ex.desc}" nessa data. Substituir?`))return;NWD=NWD.filter(x=>x.date!==date);}
   NWD.push({date,desc,type});
-  document.getElementById(`add_dt_${sid}`).value='';
-  document.getElementById(`add_desc_${sid}`).value='';
   renderNWD();
+  if(await salvarNoGitHub(`Adiciona ${date} — ${desc}`)){
+    document.getElementById(`add_dt_${sid}`).value='';
+    document.getElementById(`add_desc_${sid}`).value='';
+  }else{NWD=anterior;renderNWD();}
 }
 
-function delNWD(dateStr){
+async function delNWD(dateStr){
+  if(!isAdmin)return;
   const item=NWD.find(x=>x.date===dateStr);
   if(!confirm(`Remover "${item.desc}"?`))return;
+  const anterior=[...NWD];
   NWD=NWD.filter(x=>x.date!==dateStr);
   renderNWD();
+  if(!(await salvarNoGitHub(`Remove ${dateStr} — ${item.desc}`))){NWD=anterior;renderNWD();}
 }
 
 // ══════════════════════════════════════════
@@ -995,6 +1087,11 @@ function delNWD(dateStr){
 buildSidebar('sidebar_mp','mp');
 buildSidebar('sidebar_ed','ed');
 renderNWD();
+carregarFeriados().then(()=>{
+  renderNWD();
+  let salvo=null;try{salvo=localStorage.getItem('gh_token');}catch(_){}
+  if(salvo) entrarAdmin('mp',salvo);
+});
 </script>
 </body>
 </html>
