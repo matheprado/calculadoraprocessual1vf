@@ -1,0 +1,482 @@
+[
+  {
+    "date": "2025-10-27",
+    "desc": "Suspensão de Expediente (recesso)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-10-28",
+    "desc": "Dia do Funcionário Público",
+    "type": "feriado"
+  },
+  {
+    "date": "2025-11-20",
+    "desc": "Consciência Negra",
+    "type": "feriado"
+  },
+  {
+    "date": "2025-11-21",
+    "desc": "Suspensão de Expediente (recesso)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-12-18",
+    "desc": "Dia da Justiça (transferido)",
+    "type": "feriado"
+  },
+  {
+    "date": "2025-12-19",
+    "desc": "Emancipação do Paraná",
+    "type": "feriado"
+  },
+  {
+    "date": "2025-12-22",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-12-23",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-12-24",
+    "desc": "Véspera de Natal (art. 3º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2025-12-25",
+    "desc": "Natal",
+    "type": "feriado"
+  },
+  {
+    "date": "2025-12-26",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-12-29",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-12-30",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2025-12-31",
+    "desc": "Véspera de Ano Novo (art. 3º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-01-01",
+    "desc": "Confraternização Universal",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-01-02",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-05",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-06",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-07",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-08",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-09",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-12",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-13",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-14",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-15",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-16",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-19",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-01-20",
+    "desc": "Recesso Forense — último dia (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-02-16",
+    "desc": "Véspera de Carnaval (art. 2º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-02-17",
+    "desc": "Carnaval",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-04-02",
+    "desc": "Quinta-feira Santa (art. 2º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-04-03",
+    "desc": "Paixão de Cristo",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-04-20",
+    "desc": "Suspensão de Expediente (art. 2º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-04-21",
+    "desc": "Tiradentes",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-05-01",
+    "desc": "Dia do Trabalho",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-06-04",
+    "desc": "Corpus Christi",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-06-05",
+    "desc": "Suspensão de Expediente (art. 2º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-09-07",
+    "desc": "Independência do Brasil",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-09-15",
+    "desc": "Aniversário de Ponta Grossa (art. 4º)",
+    "type": "local"
+  },
+  {
+    "date": "2026-09-28",
+    "desc": "Implantação EPROC 01",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-10-12",
+    "desc": "Nossa Senhora Aparecida",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-10-30",
+    "desc": "Dia do Funcionário Público (transf. 28/10)",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-11-02",
+    "desc": "Finados",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-11-15",
+    "desc": "Proclamação da República (domingo)",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-11-20",
+    "desc": "Consciência Negra",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-12-18",
+    "desc": "Dia da Justiça (transf. 08/12)",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-12-21",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-12-22",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-12-23",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-12-24",
+    "desc": "Véspera de Natal (art. 3º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2026-12-25",
+    "desc": "Natal",
+    "type": "feriado"
+  },
+  {
+    "date": "2026-12-28",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-12-29",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-12-30",
+    "desc": "Recesso Forense (CPC art. 220)",
+    "type": "recesso"
+  },
+  {
+    "date": "2026-12-31",
+    "desc": "Véspera de Ano Novo (art. 3º)",
+    "type": "suspensao"
+  },
+  {
+    "date": "2027-01-01",
+    "desc": "Confraternização Universal",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-01-04",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-05",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-06",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-07",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-08",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-11",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-12",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-13",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-14",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-15",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-18",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-19",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-01-20",
+    "desc": "Recesso Forense — último dia (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-03-08",
+    "desc": "Véspera de Carnaval — por analogia",
+    "type": "suspensao"
+  },
+  {
+    "date": "2027-03-09",
+    "desc": "Carnaval — por analogia",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-04-21",
+    "desc": "Tiradentes",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-04-22",
+    "desc": "Quinta-feira Santa — por analogia",
+    "type": "suspensao"
+  },
+  {
+    "date": "2027-04-23",
+    "desc": "Paixão de Cristo — por analogia",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-05-01",
+    "desc": "Dia do Trabalho",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-06-24",
+    "desc": "Corpus Christi — por analogia",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-06-25",
+    "desc": "Suspensão após Corpus Christi — por analogia",
+    "type": "suspensao"
+  },
+  {
+    "date": "2027-09-07",
+    "desc": "Independência do Brasil",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-09-15",
+    "desc": "Aniversário de Ponta Grossa — por analogia",
+    "type": "local"
+  },
+  {
+    "date": "2027-10-12",
+    "desc": "Nossa Senhora Aparecida",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-10-28",
+    "desc": "Dia do Funcionário Público",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-11-02",
+    "desc": "Finados",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-11-15",
+    "desc": "Proclamação da República",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-11-20",
+    "desc": "Consciência Negra (sábado)",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-12-17",
+    "desc": "Dia da Justiça (transf. 08/12) — por analogia",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-12-20",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-21",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-22",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-23",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-24",
+    "desc": "Véspera de Natal (art. 3º) — por analogia",
+    "type": "suspensao"
+  },
+  {
+    "date": "2027-12-25",
+    "desc": "Natal (sábado)",
+    "type": "feriado"
+  },
+  {
+    "date": "2027-12-27",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-28",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-29",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-30",
+    "desc": "Recesso Forense (CPC art. 220) — por analogia",
+    "type": "recesso"
+  },
+  {
+    "date": "2027-12-31",
+    "desc": "Véspera de Ano Novo (art. 3º) — por analogia",
+    "type": "suspensao"
+  }
+]
